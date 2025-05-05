@@ -14,8 +14,9 @@ document.getElementById("studentForm").addEventListener("submit",function(e){
     const student={name,lastName,grade}
 
     students.push(student);
-    console.log(students)
-
+    
+    //console.log(students)
+    addStudentToTable(student)
     this.reset()
 
 
