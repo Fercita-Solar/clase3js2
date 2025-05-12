@@ -1,6 +1,6 @@
 const students=[];
 const tableBody=document.querySelector("#studensTable tbody")
-const average=document.getElementById("average")
+const averageDiv=document.getElementById("average")
 
 
 document.getElementById("studentForm").addEventListener("submit", function(e){
@@ -25,6 +25,7 @@ document.getElementById("studentForm").addEventListener("submit", function(e){
 students.push(student);
 //console.log(students)
 addStudentToTable(student)
+calcularAverage();
 this.reset()
 //holi
 });
@@ -48,5 +49,7 @@ function calcularAverage(){
         averageDiv.textContent="Promedio general del curso : N/A"
         return
     }
-    
+    const total=students.reduce((sum,student)=>sum+student.grade,0);
+    const prom=total/students.length;
+    averageDiv.textContent="Promedio general del curso :"+prom.toFixed(2);
 }
