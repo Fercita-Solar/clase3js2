@@ -1,29 +1,35 @@
 const students = [];
 const tableBody = document.querySelector("#studentsTable tbody");
 const averageDiv = document.getElementById("average");
+const alumnoEditIndex = document.getElementById("editIndex");
+
+
 document.getElementById("studentForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
     const lastName = document.getElementById("lastName").value.trim();
     const grade = parseFloat(document.getElementById("grade").value);
+    const date = document.getElementById("date").value;
 
-    if (!name) {
-        alert("Error: Por favor ingrese su nombre.");
-        return;
-    }
-    if (!lastName) {
-        alert("Error: Por favor ingrese su apellido.");
-        return;
-    }
-    if (isNaN(grade) || grade < 1 || grade > 7) {
-        alert("Error: La nota debe estar entre 1 y 7.");
+    if (!name || !lastName || isNaN(grade) || grade < 1 || grade > 7 || !date) {
+        alert("Error: ingrese los datos correctamente");
         return;
     }
 
-    const student = { name, lastName, grade };
-    students.push(student);
-    addStudentToTable(student);
+    const student = { name, lastName, grade, date };//date, para tomar la fecha del formulario//
+
+    if (alumnoEditIndex.value=== "") {
+        // Add new student
+        students.push(student);
+        addStudentToTable(student);
+    }    else{
+        const index = parseInt(alumnoEditIndex.value);
+        students[index] = student;
+        updateStudentRow(index, student);
+        alumnoEditIndex.value = ""; // Clear the edit index after updating
+        
+    }
     calcularPromedio();
     this.reset();
 });
