@@ -40,23 +40,54 @@ form.addEventListener("submit", function (e) {
     form.reset();       // Limpiar el formulario
 });
 
-// Función para mostrar todos los alumnos en la tabla
+let deleteConfirmIndex = null; // Para saber qué fila está en modo confirmación
+
 function renderTable() {
     tableBody.innerHTML = ""; // Limpiar tabla
     students.forEach((student, index) => {
         const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${student.name}</td>
-            <td>${student.lastName}</td>
-            <td>${student.grade}</td>
-            <td>${formatDate(student.date)}</td>
-            <td><button class="editBtn" onclick="editStudent(${index})">Actualizar</button></td>
-            <td><button class="deleteBtn" onclick="deleteStudent(${index})">Eliminar</button></td>
-        `;
+        if (deleteConfirmIndex === index) {
+            // Mostrar confirmación en la fila
+            row.innerHTML = `
+                <td colspan="6" style="text-align:center;">
+                    ¿Seguro que deseas eliminar este alumno?
+                    <button onclick="confirmDelete(${index})">Sí</button>
+                    <button onclick="cancelDelete()">No</button>
+                </td>
+            `;
+        } else {
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.lastName}</td>
+                <td>${student.grade}</td>
+                <td>${formatDate(student.date)}</td>
+                <td><button class="editBtn" onclick="editStudent(${index})">Actualizar</button></td>
+                <td><button class="deleteBtn" onclick="askDelete(${index})">Eliminar</button></td>
+            `;
+        }
         tableBody.appendChild(row);
     });
 }
 
+// Al hacer clic en "Eliminar"
+window.askDelete = function(index) {
+    deleteConfirmIndex = index;
+    renderTable();
+};
+
+// Si confirma eliminación
+window.confirmDelete = function(index) {
+    students.splice(index, 1);
+    deleteConfirmIndex = null;
+    renderTable();
+    calcularPromedio();
+};
+
+// Si cancela eliminación
+window.cancelDelete = function() {
+    deleteConfirmIndex = null;
+    renderTable();
+};
 // Función para editar un alumno (carga los datos en el formulario)
 window.editStudent = function(index) {
     const student = students[index];
@@ -67,14 +98,6 @@ window.editStudent = function(index) {
     editIndexInput.value = index; // Guardar el índice para actualizar
 };
 
-// Función para eliminar un alumno
-window.deleteStudent = function(index) {
-    if (confirm("¿Estás seguro que deseas eliminar este alumno?")) {
-        students.splice(index, 1);
-        renderTable();
-        calcularPromedio();
-    }
-};
 
 // Función para calcular y mostrar el promedio general
 function calcularPromedio() {
@@ -87,15 +110,12 @@ function calcularPromedio() {
     averageDiv.textContent = `Promedio General del Curso: ${prom.toFixed(2)}`;
 }
 
-// Función para formatear la fecha a formato local (dd-mm-aaaa)
+// Función para formatear la fecha a formato latino (dd/mm/aaaa) en español
 function formatDate(dateStr) {
     const date = new Date(dateStr);
-    // Si la fecha es inválida, retorna el string original
-    if (isNaN(date)) return dateStr;
-    // Opcional: mostrar también la hora actual al guardar
-    const now = new Date();
-    const hora = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
-    return date.toLocaleDateString('es-CL') + " " + hora;
+    // Si la fecha es inválida, retorna "Fecha inválida"
+    if (isNaN(date)) return "Fecha inválida";
+    return date.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 // Inicializar tabla y promedio al cargar
