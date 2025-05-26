@@ -34,12 +34,19 @@ document.getElementById("studentForm").addEventListener("submit", function (e) {
     this.reset();
 });
 
-function addStudentToTable(student) {
+function addStudentToTable(student, index) {
     const row = document.createElement("tr");
     row.innerHTML = `
         <td>${student.name}</td>
         <td>${student.lastName}</td>
-        <td>${student.grade}</td>`;
+        <td>${student.grade}</td>
+        <td>${student.date}</td>
+        <td><button onclick="editStudent(${index})">Editar</button></td>
+        <td><button onclick="deleteStudent(${index})">Eliminar</button></td>
+    `;
+            
+            
+
     tableBody.appendChild(row);
 }
 
